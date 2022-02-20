@@ -132,24 +132,27 @@ def leftClick(pos):
 def leftClickDrag(pos):
     x, y = pos
     moveToWithRandomness(x,y)
-    pyautogui.dragRel(0, -60, duration=0.2, button='left')
+    pyautogui.dragRel(0, -50, duration=0.2, button='left')
 
 def leftClickMultipleReverse(pos):
     for i in range(len(pos) -1, -1, -1):
         leftClick(pos[i])
+
+def sleep(seconds):
+    print("Sleeping for {}\r\n".format(seconds))
+    time.sleep(seconds)
 
 
 
 class Wbot():
     def __init__(self):
         # Tempo entre ações
-        pyautogui.PAUSE = 0.1
+        pyautogui.PAUSE = 0.2
         self.images = load_images()
         self.currentFrame = None
         self.currentScreen = None
         self.selectionScroll = 0
-        self.selectionScrollLimit = 10
-        self.selectionSelectedShipCount = 0
+        self.selectionScrollLimit = 6
         self.selectionAttempts = 0
 
     def run(self):
@@ -157,7 +160,7 @@ class Wbot():
 
         while True:
             print("\r\nWBot Thinking...\r\n")
-            time.sleep(1)
+            sleep(1)
 
             self.updateCurrentFrame()
 
@@ -177,6 +180,10 @@ class Wbot():
 
             if self.currentScreen == 'battle':
                 self.actionBattle()
+                continue
+
+            if self.currentScreen == 'base':
+                self.actionBase()
                 continue
 
             print("     Nothing to do....\r\n")
@@ -199,13 +206,18 @@ class Wbot():
         if pos is not None:
             self.currentScreen = 'selection'
 
-            if previousScreen != self.currentScreen:
+            if previousScreen != self.currentScreen and previousScreen != 'base':
                 self.selectionScroll = 0
+                self.selectionAttempts = 0
             return
 
         pos = self.getPos('battle_btn_surrender')
         if pos is not None:
             self.currentScreen = 'battle'
+
+        pos = self.getPos('screen_base')
+        if pos is not None:
+            self.currentScreen = 'base'
 
     def getPos(self, img_name, treshold = 0.7):
         pos = getImagePosition(self.currentFrame, self.images[img_name], treshold)
@@ -250,7 +262,7 @@ class Wbot():
         #Sign meta mask
         while True:
             print("     Looking For Metamask Sign button\n")
-            time.sleep(2)
+            sleep(2)
             self.updateCurrentFrame()
             pos = self.getPos('login_btn_metamask_sign')
 
@@ -260,7 +272,7 @@ class Wbot():
             #Looking for Play buttom
             while True:
                 print("     Looking For Play button\n")
-                time.sleep(2)
+                sleep(2)
                 self.updateCurrentFrame()
                 pos = self.getPos('login_btn_play')
 
@@ -281,37 +293,44 @@ class Wbot():
                 leftClickMultipleReverse(pos)
                 return
 
-        pos = self.getPos('selection_lbl_15-15', 0.95)
-        posBtnFightBoss = self.getPos('selection_btn_fight_boss', 0.9)
+        posBtnFightBoss = self.getPos('selection_btn_fight_boss')
 
+        pos = self.getPos('selection_lbl_15-15', 0.98)
         #naves full, ir para luta
         if pos is not None:
             print("     Naves FULL, FIGHT\r\n")
             leftClick(posBtnFightBoss)
             return
 
-        #naves não full, selecionar
-        pos = self.getPosMultiple('selection_btn_fight')
+        #naves não full, selecionar naves 100%
+        pos = self.getPosMultiple('selection_btn_fight_full', 0.95)
         if pos is not None:
             print("     Naves não FULL, SELECIONAR {}\r\n".format(self.selectionAttempts))
             self.selectionAttempts += 1
 
-            #Click 2 times to be safe
             leftClickMultipleReverse(pos)
-            leftClickMultipleReverse(pos)
+            sleep(2)
+            return
 
-            if self.selectionAttempts % 3 != 0:
-                return
-
+            # if self.selectionAttempts % 3 != 0:
+            #     return
 
         #Se já scrollou mais que o limite vai para batalha
         if self.selectionScroll >= self.selectionScrollLimit:
-            print("     Scroll Limit Reached, going to FIGHT {}/{}".format(self.selectionScroll, self.selectionScrollLimit))
-            leftClick(posBtnFightBoss)
+            print("     Scroll Limit Reached, going to BASE and back {}/{}".format(self.selectionScroll, self.selectionScrollLimit))
+            pos = self.getPos('selection_btn_base')
+            leftClick(pos)
             #reset variables
-            self.selectionSelectedShipCount = 0
             self.selectionAttempts = 0
             return
+
+        #Se já scrollou mais que o limite vai para batalha
+        # if self.selectionScroll >= self.selectionScrollLimit:
+        #     print("     Scroll Limit Reached, going to FIGHT {}/{}".format(self.selectionScroll, self.selectionScrollLimit))
+        #     leftClick(posBtnFightBoss)
+        #     #reset variables
+        #     self.selectionAttempts = 0
+        #     return
 
         #Scrollar
         pos = self.getPos('selection_btn_scroll')
@@ -319,7 +338,7 @@ class Wbot():
             print("     Scrolling {}/{}".format(self.selectionScroll, self.selectionScrollLimit))
             leftClickDrag(pos)
             self.selectionScroll +=1
-            time.sleep(2)
+            sleep(2)
         return
 
 
@@ -377,6 +396,12 @@ class Wbot():
             if pos is not None:
                 leftClick(pos)
 
+    def actionBase(self):
+        pos = self.getPos('base_btn_spaceship')
+        if pos is not None:
+            print("     Na tela de Base, indo para spaceships.... \r\n")
+            leftClick(pos)
+            return
 
 bot = Wbot()
 bot.run()
