@@ -9,6 +9,7 @@ import pyautogui
 import time
 import sys
 from pprint import pprint
+import yaml
 
 VERSAO_SCRIPT = "1.00"
 
@@ -51,9 +52,9 @@ def debug_mousepos():
     except KeyboardInterrupt:
         print('\n')
 
-def printScreen():
+def printScreen(monitorNumber = 0):
     with mss.mss() as sct:
-        monitor = sct.monitors[1]
+        monitor = sct.monitors[monitorNumber]
         sct_img = np.array(sct.grab(monitor))
         # The screen part to capture
         # monitor = {"top": 160, "left": 160, "width": 1000, "height": 135}
@@ -142,6 +143,13 @@ def sleep(seconds):
     print("Sleeping for {}\r\n".format(seconds))
     time.sleep(seconds)
 
+def loadYaml(filename):
+    with open(filename, "r") as stream:
+        try:
+            return yaml.safe_load(stream)
+        except yaml.YAMLError as exc:
+            print(exc)
+
 
 
 class Wbot():
@@ -154,6 +162,9 @@ class Wbot():
         self.selectionScroll = 0
         self.selectionScrollLimit = 6
         self.selectionAttempts = 0
+        self.settings = loadYaml("settings.yaml")
+
+        pprint(self.settings)
 
     def run(self):
         print("WBot Run!\n")
@@ -192,7 +203,7 @@ class Wbot():
 
     def updateCurrentFrame(self):
         print("updateCurrentFrame\n")
-        self.currentFrame = printScreen()
+        self.currentFrame = printScreen(self.settings['monitorNum'])
 
     def detectCurrentScreen(self):
         previousScreen = self.currentScreen
@@ -303,26 +314,27 @@ class Wbot():
             return
 
         #naves não full, selecionar naves 100%
-        pos = self.getPosMultiple('selection_btn_fight_full', 0.95)
+        pos = self.getPosMultiple('selection_btn_fight_full', 0.98)
         if pos is not None:
             print("     Naves não FULL, SELECIONAR {}\r\n".format(self.selectionAttempts))
-            self.selectionAttempts += 1
 
+            self.selectionAttempts += 1
             leftClickMultipleReverse(pos)
-            sleep(2)
+            sleep(1)
             return
 
             # if self.selectionAttempts % 3 != 0:
             #     return
 
-        #Se já scrollou mais que o limite vai para batalha
+        #Se já scrollou mais que o limite vai base
         if self.selectionScroll >= self.selectionScrollLimit:
             print("     Scroll Limit Reached, going to BASE and back {}/{}".format(self.selectionScroll, self.selectionScrollLimit))
             pos = self.getPos('selection_btn_base')
-            leftClick(pos)
+
+            if pos is not None:
+                leftClick(pos)
+                return
             #reset variables
-            self.selectionAttempts = 0
-            return
 
         #Se já scrollou mais que o limite vai para batalha
         # if self.selectionScroll >= self.selectionScrollLimit:
@@ -400,6 +412,9 @@ class Wbot():
         pos = self.getPos('base_btn_spaceship')
         if pos is not None:
             print("     Na tela de Base, indo para spaceships.... \r\n")
+
+            self.selectionAttempts = 1
+            self.selectionScroll = 1
             leftClick(pos)
             return
 

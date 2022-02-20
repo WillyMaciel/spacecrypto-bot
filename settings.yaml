@@ -1,0 +1,7 @@
+#Selecione seu monitor primário
+#Caso o bot clique em lugares esquisitos e você possui multiplos monitores mude os valores até acertar o monitor que o space crypto está rodando
+# valor padrão: 0
+#   Monitor 1 = 0,
+#   Monitor 2 = 1
+#   Monitor 3 = 2
+monitorNum: 0
