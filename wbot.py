@@ -164,8 +164,6 @@ class Wbot():
         self.selectionAttempts = 0
         self.settings = loadYaml("settings.yaml")
 
-        pprint(self.settings)
-
     def run(self):
         print("WBot Run!\n")
 
