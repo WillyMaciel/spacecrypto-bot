@@ -318,7 +318,7 @@ class Wbot():
 
             self.selectionAttempts += 1
             leftClickMultipleReverse(pos)
-            sleep(1)
+            sleep(2)
             return
 
             # if self.selectionAttempts % 3 != 0:
@@ -332,15 +332,6 @@ class Wbot():
             if pos is not None:
                 leftClick(pos)
                 return
-            #reset variables
-
-        #Se já scrollou mais que o limite vai para batalha
-        # if self.selectionScroll >= self.selectionScrollLimit:
-        #     print("     Scroll Limit Reached, going to FIGHT {}/{}".format(self.selectionScroll, self.selectionScrollLimit))
-        #     leftClick(posBtnFightBoss)
-        #     #reset variables
-        #     self.selectionAttempts = 0
-        #     return
 
         #Scrollar
         pos = self.getPos('selection_btn_scroll')
@@ -411,6 +402,7 @@ class Wbot():
         if pos is not None:
             print("     Na tela de Base, indo para spaceships.... \r\n")
 
+            #reset variables
             self.selectionAttempts = 1
             self.selectionScroll = 1
             leftClick(pos)
