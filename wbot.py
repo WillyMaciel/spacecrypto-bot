@@ -314,7 +314,7 @@ class Wbot():
             return
 
         #naves não full, selecionar naves 100%
-        pos = self.getPosMultiple('selection_btn_fight_full', 0.98)
+        pos = self.getPosMultiple('selection_btn_fight_full', 0.95)
         if pos is not None:
             print("     Naves não FULL, SELECIONAR {}\r\n".format(self.selectionAttempts))
 
@@ -323,7 +323,7 @@ class Wbot():
             # sleep(1)
 
         if(self.selectionRefresh >= self.selectionRefreshLimit):
-            print("     Limite de refresh atingido {}/{}, FIGHT\r\n").format(self.selectionRefresh, self.selectionRefreshLimit)
+            print("     Limite de refresh atingido {}/{}, FIGHT\r\n".format(self.selectionRefresh, self.selectionRefreshLimit))
             leftClick(posBtnFightBoss)
             return
 
