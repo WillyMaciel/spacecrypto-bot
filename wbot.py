@@ -322,15 +322,6 @@ class Wbot():
             leftClickMultipleReverse(pos)
             # sleep(1)
 
-            #Se encontrou menos de 2 botões da uma scrollada
-            if(len(pos) < 2):
-                self.selectionMouseScroll()
-
-            return
-
-            # if self.selectionAttempts % 3 != 0:
-            #     return
-
         if(self.selectionRefresh >= self.selectionRefreshLimit):
             print("     Limite de refresh atingido {}/{}, FIGHT\r\n").format(self.selectionRefresh, self.selectionRefreshLimit)
             leftClick(posBtnFightBoss)
