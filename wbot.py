@@ -160,7 +160,7 @@ class Wbot():
         self.currentFrame = None
         self.currentScreen = None
         self.selectionScroll = 0
-        self.selectionScrollLimit = 3
+        self.selectionScrollLimit = 5
         self.selectionAttempts = 0
         self.selectionRefresh = 0
         self.selectionRefreshLimit = 2
