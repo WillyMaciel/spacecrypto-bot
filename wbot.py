@@ -127,7 +127,7 @@ def remove_suffix(input_string, suffix):
 
 def leftClick(pos):
     x, y = pos
-    moveToWithRandomness(x,y)
+    moveToWithRandomness(x,y, 0.1)
     pyautogui.click()
 
 def leftClickDrag(pos):
@@ -155,13 +155,15 @@ def loadYaml(filename):
 class Wbot():
     def __init__(self):
         # Tempo entre ações
-        pyautogui.PAUSE = 0.2
+        pyautogui.PAUSE = 0.1
         self.images = load_images()
         self.currentFrame = None
         self.currentScreen = None
         self.selectionScroll = 0
-        self.selectionScrollLimit = 6
+        self.selectionScrollLimit = 3
         self.selectionAttempts = 0
+        self.selectionRefresh = 0
+        self.selectionRefreshLimit = 2
         self.settings = loadYaml("settings.yaml")
 
     def run(self):
@@ -318,11 +320,21 @@ class Wbot():
 
             self.selectionAttempts += 1
             leftClickMultipleReverse(pos)
-            sleep(2)
+            # sleep(1)
+
+            #Se encontrou menos de 2 botões da uma scrollada
+            if(len(pos) < 2):
+                self.selectionMouseScroll()
+
             return
 
             # if self.selectionAttempts % 3 != 0:
             #     return
+
+        if(self.selectionRefresh >= self.selectionRefreshLimit):
+            print("     Limite de refresh atingido {}/{}, FIGHT\r\n").format(self.selectionRefresh, self.selectionRefreshLimit)
+            leftClick(posBtnFightBoss)
+            return
 
         #Se já scrollou mais que o limite vai base
         if self.selectionScroll >= self.selectionScrollLimit:
@@ -334,13 +346,17 @@ class Wbot():
                 return
 
         #Scrollar
+        self.selectionMouseScroll()
+        self.selectionScroll +=1
+        return
+
+    def selectionMouseScroll(self):
         pos = self.getPos('selection_btn_scroll')
         if pos is not None:
             print("     Scrolling {}/{}".format(self.selectionScroll, self.selectionScrollLimit))
             leftClickDrag(pos)
-            self.selectionScroll +=1
             sleep(2)
-        return
+            return
 
 
     def actionCloseError(self):
@@ -405,6 +421,7 @@ class Wbot():
             #reset variables
             self.selectionAttempts = 1
             self.selectionScroll = 1
+            self.selectionRefresh += 1
             leftClick(pos)
             return
 
