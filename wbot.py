@@ -220,6 +220,7 @@ class Wbot():
             if previousScreen != self.currentScreen and previousScreen != 'base':
                 self.selectionScroll = 0
                 self.selectionAttempts = 0
+                self.selectionRefresh = 0
             return
 
         pos = self.getPos('battle_btn_surrender')
@@ -320,6 +321,7 @@ class Wbot():
 
             self.selectionAttempts += 1
             leftClickMultipleReverse(pos)
+            return
             # sleep(1)
 
         if(self.selectionRefresh >= self.selectionRefreshLimit):
