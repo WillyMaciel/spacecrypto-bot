@@ -326,7 +326,10 @@ class Wbot():
 
         if(self.selectionRefresh >= self.selectionRefreshLimit):
             print("     Limite de refresh atingido {}/{}, FIGHT\r\n".format(self.selectionRefresh, self.selectionRefreshLimit))
-            leftClick(posBtnFightBoss)
+            pos = self.getPos('selection_btn_fight_boss')
+
+            if pos is not None:
+                leftClick(posBtnFightBoss)
             return
 
         #Se já scrollou mais que o limite vai base
